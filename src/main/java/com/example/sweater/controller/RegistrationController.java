@@ -3,10 +3,12 @@ package com.example.sweater.controller;
 import com.example.sweater.domain.Role;
 import com.example.sweater.domain.User;
 import com.example.sweater.repos.UserRepo;
+import com.example.sweater.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 
 import java.util.Collections;
@@ -33,6 +35,13 @@ public class RegistrationController {
 
         user.setActive(true);
         user.setRoles(Collections.singleton(Role.USER));
+
+        // Check if the user's ID is already used
+        if (user.getId() != null && userRepo.existsById(user.getId())) {
+            model.put("message", "User ID already exists!");
+            return "registration";
+        }
+
         userRepo.save(user);
 
         return "redirect:/login";
